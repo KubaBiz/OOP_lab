@@ -31,10 +31,11 @@ public class World {
         }
     }
     public static void main(String[] args) {
-        System.out.println("System START");
-        Direction[] kierunki = new Direction[args.length];
-        change(args, kierunki);
-        run(kierunki);
-        System.out.print("System STOP");
+    OptionsParser tab = new OptionsParser();
+    Animal krowa = new Animal();
+    for(MoveDirection arg: tab.parse(args)){
+        krowa.move(arg);
+    }
+    System.out.println(krowa);
     }
 }
