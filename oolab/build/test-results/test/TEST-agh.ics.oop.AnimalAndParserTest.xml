@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="agh.ics.oop.AnimalAndParserTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2022-11-01T22:02:18" hostname="DESKTOP-QFBP85B" time="0.039">
+<testsuite name="agh.ics.oop.AnimalAndParserTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2022-11-06T10:10:55" hostname="DESKTOP-QFBP85B" time="0.052">
   <properties/>
-  <testcase name="BigAnimalTest()" classname="agh.ics.oop.AnimalAndParserTest" time="0.035"/>
-  <testcase name="ParserTest()" classname="agh.ics.oop.AnimalAndParserTest" time="0.002"/>
-  <testcase name="SmallAnimalTest()" classname="agh.ics.oop.AnimalAndParserTest" time="0.0"/>
+  <testcase name="BigAnimalTest()" classname="agh.ics.oop.AnimalAndParserTest" time="0.046"/>
+  <testcase name="ParserTest()" classname="agh.ics.oop.AnimalAndParserTest" time="0.003"/>
+  <testcase name="SmallAnimalTest()" classname="agh.ics.oop.AnimalAndParserTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
