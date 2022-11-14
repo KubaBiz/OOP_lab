@@ -1,73 +1,39 @@
 package agh.ics.oop;
 
 public class Animal {
-    private MapDirection orientation = MapDirection.NORTH;
-    private Vector2d position = new Vector2d(2,2);
-
-    @Override
-    public String toString(){
-    return position.toString() +" "+ orientation;
+    IWorldMap map;
+    private MapDirection orientation;
+    protected Vector2d position;
+    public Animal (IWorldMap mapa, Vector2d initialPosition){
+        orientation = MapDirection.NORTH;
+        map = mapa;
+        position = initialPosition;
     }
+    @Override
+    public String toString(){ return orientation.toString(); }
+
     public boolean isAt(Vector2d position){
         return position.equals(this.position);
     }
 
     public void move(MoveDirection direction){
-        switch (direction){
-            case RIGHT:
-                orientation = orientation.next();
-                break;
-            case LEFT:
-                orientation = orientation.previous();
-                break;
-            case FORWARD:
-                switch(orientation){
-                    case EAST:
-                        if(position.x<4) {
-                            position = position.add(orientation.toUnitVector());
-                        }
-                        break;
-                    case WEST:
-                        if(position.x>0) {
-                            position = position.add(orientation.toUnitVector());
-                        }
-                        break;
-                    case NORTH:
-                        if (position.y<4) {
-                            position = position.add(orientation.toUnitVector());
-                        }
-                        break;
-                    case SOUTH:
-                        if (position.y>0) {
-                            position = position.add(orientation.toUnitVector());
-                        }
-                        break;
+        if(direction == MoveDirection.RIGHT) orientation = orientation.next();
+        else if (direction == MoveDirection.LEFT) orientation = orientation.previous();
+        else{
+            int a = MoveDirection.FORWARD == direction ? 1 : -1;
+            if (a == 1){
+                Vector2d tmp = position.add(orientation.toUnitVector());
+                if (map.canMoveTo(tmp) && !map.isOccupied(tmp)){
+                    position=tmp;
                 }
-                break;
-            case BACKWARD:
-                switch(orientation){
-                    case EAST:
-                        if(position.x>0) {
-                            position = position.subtract(orientation.toUnitVector());
-                        }
-                        break;
-                    case WEST:
-                        if(position.x<4) {
-                            position = position.subtract(orientation.toUnitVector());
-                        }
-                        break;
-                    case NORTH:
-                        if (position.y>0) {
-                            position = position.subtract(orientation.toUnitVector());
-                        }
-                        break;
-                    case SOUTH:
-                        if (position.y<4) {
-                            position = position.subtract(orientation.toUnitVector());
-                        }
-                        break;
+            }
+            else {
+                Vector2d tmp = position.subtract(orientation.toUnitVector());
+                if (map.canMoveTo(tmp) && !map.isOccupied(tmp)){
+                    position=tmp;
                 }
-                break;
+            }
+
         }
     }
 }

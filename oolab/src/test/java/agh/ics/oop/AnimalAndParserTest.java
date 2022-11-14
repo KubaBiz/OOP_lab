@@ -17,26 +17,26 @@ public class AnimalAndParserTest {
         assertArrayEquals(tab.parse(third),new MoveDirection[] {MoveDirection.LEFT, MoveDirection.RIGHT,MoveDirection.FORWARD});
     }
 
-    @Test
-    void SmallAnimalTest(){
-        Animal krowa = new Animal();
-        assertEquals(krowa.toString(),"(2,2) Północ");
-        String[] first = {"l", "l", "l", "r"};
-        OptionsParser tab = new OptionsParser();
-        for(MoveDirection arg: tab.parse(first)){
-            krowa.move(arg);
-        }
-        assertEquals(krowa.toString(),"(2,2) Południe");
-    }
+  //  @Test
+  //  void SmallAnimalTest(){
+  //      Animal krowa = new Animal();
+  //      assertEquals(krowa.toString(),"(2,2) Północ");
+  //      String[] first = {"l", "l", "l", "r"};
+  //      OptionsParser tab = new OptionsParser();
+  //      for(MoveDirection arg: tab.parse(first)){
+  //          krowa.move(arg);
+  //      }
+  //      assertEquals(krowa.toString(),"(2,2) Południe");
+  //  }
 
-    @Test
-    void BigAnimalTest(){
-        Animal krowa = new Animal();
-        String[] first = {"f", "l", "f", "f", "f", "f", "l", "f", "b", "b", "b", "b", "r"};
-        OptionsParser tab = new OptionsParser();
-        for(MoveDirection arg: tab.parse(first)){
-            krowa.move(arg);
-        }
-        assertEquals(krowa.toString(),"(0,4) Zachód");
-    }
+  //  @Test
+  //  void BigAnimalTest(){
+  //      Animal krowa = new Animal();
+  //      String[] first = {"f", "l", "f", "f", "f", "f", "l", "f", "b", "b", "b", "b", "r"};
+  //      OptionsParser tab = new OptionsParser();
+  //      for(MoveDirection arg: tab.parse(first)){
+  //          krowa.move(arg);
+  //      }
+  //      assertEquals(krowa.toString(),"(0,4) Zachód");
+  //  }
 }
