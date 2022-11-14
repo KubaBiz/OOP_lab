@@ -21,19 +21,24 @@ public class Animal {
         else if (direction == MoveDirection.LEFT) orientation = orientation.previous();
         else{
             int a = MoveDirection.FORWARD == direction ? 1 : -1;
+            Vector2d tmp;
             if (a == 1){
-                Vector2d tmp = position.add(orientation.toUnitVector());
-                if (map.canMoveTo(tmp) && !map.isOccupied(tmp)){
-                    position=tmp;
-                }
+                tmp = position.add(orientation.toUnitVector());
             }
             else {
-                Vector2d tmp = position.subtract(orientation.toUnitVector());
-                if (map.canMoveTo(tmp) && !map.isOccupied(tmp)){
-                    position=tmp;
-                }
+                tmp = position.subtract(orientation.toUnitVector());
             }
-
+            if (map.canMoveTo(tmp)){
+                position=tmp;
+            }
         }
+    }
+
+    public MapDirection getOrientation() {
+        return orientation;
+    }
+
+    public Vector2d getPosition() {
+        return position;
     }
 }
