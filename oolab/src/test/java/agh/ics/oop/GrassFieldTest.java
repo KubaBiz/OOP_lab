@@ -2,17 +2,17 @@ package agh.ics.oop;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RectangularMapTest {
+class GrassFieldTest {
 
     @Test
     void canMoveToTest() {
         String[] args = {"f","r","f","f","l"};
         MoveDirection[] directions = new OptionsParser().parse(args);
-        IWorldMap map = new RectangularMap(10, 10);
+        IWorldMap map = new GrassField(10);
         Vector2d[] positions = { new Vector2d(1,2), new Vector2d(2,3)};
         IEngine engine = new SimulationEngine(directions, map, positions);
 
@@ -26,7 +26,7 @@ public class RectangularMapTest {
     void placeTest() {
         String[] args = {"f","r","f","f","l","b"};
         MoveDirection[] directions = new OptionsParser().parse(args);
-        IWorldMap map = new RectangularMap(10, 10);
+        IWorldMap map = new GrassField( 10);
         Vector2d[] positions = { new Vector2d(1,2), new Vector2d(2,3)};
         IEngine engine = new SimulationEngine(directions, map, positions);
 
@@ -46,16 +46,14 @@ public class RectangularMapTest {
     void isOccupiedTest() {
         String[] args = {"f","r","f","f","l"};
         MoveDirection[] directions = new OptionsParser().parse(args);
-        IWorldMap map = new RectangularMap(10, 10);
+        IWorldMap map = new GrassField( 10);
         Vector2d[] positions = { new Vector2d(1,2), new Vector2d(2,3)};
         IEngine engine = new SimulationEngine(directions, map, positions);
 
         engine.run();
-        assertFalse(map.isOccupied(new Vector2d(2, 2)));
         assertTrue(map.isOccupied(new Vector2d(1, 4)));
         assertTrue(map.isOccupied(new Vector2d(3, 3)));
         Animal animal = new Animal(map, new Vector2d(2, 4));
-        assertFalse(map.isOccupied(new Vector2d(2, 4)));
         map.place(animal);
         assertTrue(map.isOccupied(new Vector2d(2, 4)));
     }
@@ -64,16 +62,25 @@ public class RectangularMapTest {
     void objectAtTest() {
         String[] args = {"f","r","f","f","l"};
         MoveDirection[] directions = new OptionsParser().parse(args);
-        IWorldMap map = new RectangularMap(10, 10);
+        IWorldMap map = new GrassField( 10);
         Vector2d[] positions = { new Vector2d(1,2), new Vector2d(2,3)};
         IEngine engine = new SimulationEngine(directions, map, positions);
 
         engine.run();
-        RectangularMap map1 = (RectangularMap) map;
+        GrassField map1 = (GrassField) map;
         ArrayList<Animal> animals1 = map1.getAnimals();
         assertNotEquals(map.objectAt(new Vector2d(2, 3)), animals1.get(0));
         assertEquals(map.objectAt(new Vector2d(1, 4)), animals1.get(0));
         assertEquals(map.objectAt(new Vector2d(3, 3)), animals1.get(1));
-        assertNull(map.objectAt(new Vector2d(0, 0)));
+    }
+    @Test
+    void placeGrass() {
+        String[] arr = {"f", "l", "r","f","f","r","r","f","l","f","f","f","f","f","f","f","f","f","f","f"};
+        MoveDirection[] directions = new OptionsParser().parse(arr);
+        IWorldMap mapa = new GrassField(10);
+        Vector2d[] positions = { new Vector2d(1,2), new Vector2d(2, 3)};
+        IEngine engine = new SimulationEngine(directions, mapa, positions);
+        engine.run();
+        assertFalse(((GrassField) mapa).placeGrass());
     }
 }

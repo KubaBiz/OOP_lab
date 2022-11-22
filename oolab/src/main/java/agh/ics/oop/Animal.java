@@ -1,9 +1,8 @@
 package agh.ics.oop;
 
-public class Animal {
+public class Animal extends AbstractWorldElement{
     IWorldMap map;
     private MapDirection orientation;
-    protected Vector2d position;
     public Animal (IWorldMap mapa, Vector2d initialPosition){
         orientation = MapDirection.NORTH;
         map = mapa;
@@ -38,7 +37,4 @@ public class Animal {
         return orientation;
     }
 
-    public Vector2d getPosition() {
-        return position;
-    }
 }
