@@ -74,7 +74,7 @@ class GrassFieldTest {
         assertEquals(map.objectAt(new Vector2d(3, 3)), animals1.get(1));
     }
     @Test
-    void placeGrass() {
+    void placeGrassTest() {
         String[] arr = {"f", "l", "r","f","f","r","r","f","l","f","f","f","f","f","f","f","f","f","f","f"};
         MoveDirection[] directions = new OptionsParser().parse(arr);
         IWorldMap mapa = new GrassField(10);
@@ -82,5 +82,23 @@ class GrassFieldTest {
         IEngine engine = new SimulationEngine(directions, mapa, positions);
         engine.run();
         assertFalse(((GrassField) mapa).placeGrass());
+        assertTrue(mapa.place(new Animal(mapa,new Vector2d(3,3))));
+    }
+
+    @Test
+    void positionChangedTest(){
+        String[] arr = {"f","r","f","f","l"};
+        MoveDirection[] directions = new OptionsParser().parse(arr);
+        GrassField mapa = new GrassField(10);
+        Vector2d[] positions = { new Vector2d(1,2), new Vector2d(2, 3)};
+        IEngine engine = new SimulationEngine(directions, mapa, positions);
+        engine.run();
+
+        ArrayList<Animal> animals = mapa.getAnimals();
+        animals.get(0).addObserver(mapa);
+        animals.get(0).addObserver(new GrassField(10));
+        animals.get(0).move(MoveDirection.FORWARD);
+        ArrayList<IPositionChangeObserver> observers = animals.get(0).getObservers();
+        assertEquals(observers.get(0),observers.get(1));
     }
 }

@@ -7,17 +7,15 @@ import static java.lang.Math.*;
 public class GrassField extends AbstractWorldMap{
     private final int n;
     private final int zakres;
-    private ArrayList<Grass> grasses;
+    private int count = 0;
 
     public GrassField(int param){
-        n=param;
+        n = Math.max(param, 0);
         zakres=(int) sqrt(n*10);
         right_corner = new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
         left_corner = new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
-        max_position=new Vector2d(zakres,zakres);
+        max_position=new Vector2d(0,0);
         min_position=new Vector2d(0,0);
-        grasses= new ArrayList<>();
-        animals= new ArrayList<>();
         placeGrass();
     }
 
@@ -27,19 +25,21 @@ public class GrassField extends AbstractWorldMap{
         return new Vector2d(randomX, randomY);
     }
     private Vector2d minimal(){
-        Vector2d minimum=min_position;
-        for (Animal animal: animals){
-            minimum=new Vector2d(min(minimum.x, animal.getPosition().x), min(minimum.y, animal.getPosition().y));
+        Vector2d minimum=new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        for (IMapElement element: elements.values()){
+            minimum=new Vector2d(min(minimum.x, element.getPosition().x), min(minimum.y, element.getPosition().y));
         }
-        min_position = minimum;
+        if (elements.isEmpty()){
+            return new Vector2d(0,0);
+        }
         return minimum;
     }
     private Vector2d maximal(){
-        Vector2d maksimum=max_position;
-        for (Animal animal: animals){
-            maksimum=new Vector2d(max(maksimum.x,animal.getPosition().x), max(maksimum.y,animal.getPosition().y));
+        Vector2d maksimum=new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
+        for (IMapElement element: elements.values()){
+            maksimum=new Vector2d(max(maksimum.x, element.getPosition().x), max(maksimum.y, element.getPosition().y));
         }
-        max_position = maksimum;
+        if (elements.isEmpty()){ return new Vector2d(0,0); }
         return maksimum;
     }
     private boolean canplaceGrass(){
@@ -54,14 +54,15 @@ public class GrassField extends AbstractWorldMap{
     }
     public boolean placeGrass(){
         boolean flag = false;
-        while (grasses.size()<n) {
+        while (count<n) {
             if (!canplaceGrass()) {
                 return false;
             } else {
                 while (true) {
                     Vector2d zmienna = getRandomVector(zakres);
                     if (objectAt(zmienna) == null) {
-                        grasses.add(new Grass(zmienna));
+                        elements.put(zmienna, new Grass(zmienna));
+                        count+=1;
                         flag = true;
                         break;
                     }
@@ -72,25 +73,27 @@ public class GrassField extends AbstractWorldMap{
     }
     @Override
     public boolean canMoveTo(Vector2d position){
-        if (position.follows(left_corner) && position.precedes(right_corner) && !this.isOccupied(position)){
+        if (super.canMoveTo(position)){
             return true;
         }
-        if (objectAt(position)instanceof Grass){
-            grasses.remove(objectAt(position));
+        if (objectAt(position) instanceof Grass){
+            elements.remove(position);
+            count-=1;
             return true;
         }
         return false;
     }
-
     @Override
     public boolean place(Animal animal){
-        if (canMoveTo(animal.getPosition()) && !isOccupied(animal.getPosition())){
-            animals.add(animal);
+        if (super.place(animal)){
             return true;
         }
         if (objectAt(animal.getPosition()) instanceof Grass){
-            grasses.remove(objectAt(animal.getPosition()));
+            elements.remove(animal.getPosition());
+            count-=1;
+            elements.put(animal.getPosition(), animal);
             animals.add(animal);
+            animal.addObserver(this);
             placeGrass();
             return true;
         }
@@ -100,11 +103,6 @@ public class GrassField extends AbstractWorldMap{
     public Object objectAt(Vector2d position){
         if (super.objectAt(position)!=null){
             return super.objectAt(position);
-        }
-        for (Grass grass: grasses){
-            if (grass.getPosition().equals(position)){
-                return grass;
-            }
         }
         return null;
     }

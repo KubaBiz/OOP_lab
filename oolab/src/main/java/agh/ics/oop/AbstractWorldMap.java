@@ -1,8 +1,11 @@
 package agh.ics.oop;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-abstract class AbstractWorldMap implements IWorldMap{
+abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
+    protected Map<Vector2d,IMapElement> elements = new HashMap<>();
     protected ArrayList<Animal> animals = new ArrayList<>();
     protected Vector2d min_position;
     protected Vector2d max_position;
@@ -16,22 +19,26 @@ abstract class AbstractWorldMap implements IWorldMap{
     @Override
     public boolean place(Animal animal) {
         if (canMoveTo(animal.getPosition()) && !isOccupied(animal.getPosition())){
+            elements.put(animal.getPosition(), animal);
             animals.add(animal);
+            animal.addObserver(this);
             return true;
         }
         return false;
     }
+    @Override
     public boolean isOccupied(Vector2d position) { return objectAt(position)!=null; }
     @Override
     public Object objectAt(Vector2d position) {
-        for (Animal animal : animals) {
-            if (animal.getPosition().equals(position)) {
-                return animal;
-            }
-        }
+        if(elements.containsKey(position)){return elements.get(position);}
         return null;
     }
-
+    @Override
+    public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
+        Animal animal = (Animal) objectAt(oldPosition);
+        elements.remove(oldPosition);
+        elements.put(newPosition, animal);
+    }
     @Override
     public String toString() {
         return(new MapVisualizer(this).draw(min_position, max_position));
@@ -46,5 +53,8 @@ abstract class AbstractWorldMap implements IWorldMap{
     }
     public Vector2d get_max_position(){
         return max_position;
+    }
+    public HashMap<Vector2d, IMapElement> getElements() {
+        return new HashMap<>(elements);
     }
 }
