@@ -1,6 +1,8 @@
 package agh.ics.oop;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * The interface responsible for interacting with the map of the world.
  * Assumes that Vector2d and MoveDirection classes are defined.
@@ -47,9 +49,9 @@ public interface IWorldMap {
      */
     Object objectAt(Vector2d position);
 
-    ArrayList<Animal> getAnimals();
-
     Vector2d get_max_position();
 
     Vector2d get_min_position();
+
+    HashMap<Vector2d, IMapElement> getElements();
 }

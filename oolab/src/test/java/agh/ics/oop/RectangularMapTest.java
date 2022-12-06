@@ -70,10 +70,10 @@ public class RectangularMapTest {
 
         engine.run();
         RectangularMap map1 = (RectangularMap) map;
-        ArrayList<Animal> animals1 = map1.getAnimals();
-        assertNotEquals(map.objectAt(new Vector2d(2, 3)), animals1.get(0));
-        assertEquals(map.objectAt(new Vector2d(1, 4)), animals1.get(0));
-        assertEquals(map.objectAt(new Vector2d(3, 3)), animals1.get(1));
+        HashMap<Vector2d,IMapElement> animals1 = map1.getElements();
+        assertNotEquals(map.objectAt(new Vector2d(2, 3)), animals1.get(new Vector2d(2, 3)));
+        assertEquals(map.objectAt(new Vector2d(1, 4)), animals1.get(new Vector2d(1, 4)));
+        assertEquals(map.objectAt(new Vector2d(3, 3)), animals1.get(new Vector2d(3, 3)));
         assertNull(map.objectAt(new Vector2d(0, 0)));
     }
 }

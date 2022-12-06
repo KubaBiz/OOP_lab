@@ -2,7 +2,7 @@ package agh.ics.oop;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -68,10 +68,10 @@ class GrassFieldTest {
 
         engine.run();
         GrassField map1 = (GrassField) map;
-        ArrayList<Animal> animals1 = map1.getAnimals();
-        assertNotEquals(map.objectAt(new Vector2d(2, 3)), animals1.get(0));
-        assertEquals(map.objectAt(new Vector2d(1, 4)), animals1.get(0));
-        assertEquals(map.objectAt(new Vector2d(3, 3)), animals1.get(1));
+        HashMap<Vector2d,IMapElement> animals1 = map1.getElements();
+        assertNotEquals(map.objectAt(new Vector2d(2, 3)), animals1.get(new Vector2d(2, 3)));
+        assertEquals(map.objectAt(new Vector2d(1, 4)), animals1.get(new Vector2d(1, 4)));
+        assertEquals(map.objectAt(new Vector2d(3, 3)), animals1.get(new Vector2d(3, 3)));
     }
     @Test
     void placeGrassTest() {
@@ -83,22 +83,5 @@ class GrassFieldTest {
         engine.run();
         assertFalse(((GrassField) mapa).placeGrass());
         assertTrue(mapa.place(new Animal(mapa,new Vector2d(3,3))));
-    }
-
-    @Test
-    void positionChangedTest(){
-        String[] arr = {"f","r","f","f","l"};
-        MoveDirection[] directions = new OptionsParser().parse(arr);
-        GrassField mapa = new GrassField(10);
-        Vector2d[] positions = { new Vector2d(1,2), new Vector2d(2, 3)};
-        IEngine engine = new SimulationEngine(directions, mapa, positions);
-        engine.run();
-
-        ArrayList<Animal> animals = mapa.getAnimals();
-        animals.get(0).addObserver(mapa);
-        animals.get(0).addObserver(new GrassField(10));
-        animals.get(0).move(MoveDirection.FORWARD);
-        ArrayList<IPositionChangeObserver> observers = animals.get(0).getObservers();
-        assertEquals(observers.get(0),observers.get(1));
     }
 }

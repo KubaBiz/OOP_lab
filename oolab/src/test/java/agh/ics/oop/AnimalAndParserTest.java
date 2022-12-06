@@ -12,12 +12,19 @@ public class AnimalAndParserTest {
     @Test
     void ParserTest() {
         String[] first = {"b", "f", "l", "r"};
-        String[] second = {"backward", "B", "forward"};
+        String[] second = {"backward", "b", "forward"};
         String[] third = {"c", "left", "right", "d", "f", "for"};
         OptionsParser tab = new OptionsParser();
         assertArrayEquals(tab.parse(first), new MoveDirection[]{MoveDirection.BACKWARD, MoveDirection.FORWARD, MoveDirection.LEFT, MoveDirection.RIGHT});
-        assertArrayEquals(tab.parse(second), new MoveDirection[]{MoveDirection.BACKWARD, MoveDirection.FORWARD});
-        assertArrayEquals(tab.parse(third), new MoveDirection[]{MoveDirection.LEFT, MoveDirection.RIGHT, MoveDirection.FORWARD});
+        assertArrayEquals(tab.parse(second), new MoveDirection[]{MoveDirection.BACKWARD,MoveDirection.BACKWARD, MoveDirection.FORWARD});
+        boolean thrown = false;
+        try {
+            tab.parse(third);
+        } catch (IllegalArgumentException ex) {
+            thrown = true;
+        }
+
+        assertTrue(thrown);
     }
 
     @Test

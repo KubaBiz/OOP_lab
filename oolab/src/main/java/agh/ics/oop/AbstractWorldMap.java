@@ -6,25 +6,29 @@ import java.util.Map;
 
 abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
     protected Map<Vector2d,IMapElement> elements = new HashMap<>();
-    protected ArrayList<Animal> animals = new ArrayList<>();
     protected Vector2d min_position;
     protected Vector2d max_position;
     protected Vector2d right_corner;
     protected Vector2d left_corner;
+    protected MapBoundary mapBound = new MapBoundary();
 
     @Override
     public boolean canMoveTo(Vector2d position) {
         return position.follows(left_corner) && position.precedes(right_corner) && !this.isOccupied(position);
     }
     @Override
-    public boolean place(Animal animal) {
-        if (canMoveTo(animal.getPosition()) && !isOccupied(animal.getPosition())){
-            elements.put(animal.getPosition(), animal);
-            animals.add(animal);
-            animal.addObserver(this);
-            return true;
+    public boolean place(Animal animal) throws IllegalArgumentException{
+        try {
+            if (canMoveTo(animal.getPosition()) && !isOccupied(animal.getPosition())) {
+                elements.put(animal.getPosition(), animal);
+                animal.addObserver(this);
+                mapBound.addElementToMap(animal.getPosition());
+                return true;
+            }
+            throw new IllegalArgumentException();
+        } catch (IllegalArgumentException ex){
+            throw new IllegalArgumentException(animal.getPosition() + " na te koordynaty są dodawane dwa zwierzęta");
         }
-        return false;
     }
     @Override
     public boolean isOccupied(Vector2d position) { return objectAt(position)!=null; }
@@ -33,19 +37,20 @@ abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObserver{
         if(elements.containsKey(position)){return elements.get(position);}
         return null;
     }
+
+    public Vector2d getLowerLeft(){ return mapBound.lowerLeftCheck(); }
+
+    public Vector2d getUpperRight(){ return mapBound.upperRightCheck(); }
     @Override
     public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
         Animal animal = (Animal) objectAt(oldPosition);
         elements.remove(oldPosition);
         elements.put(newPosition, animal);
+        mapBound.positionChanged(oldPosition,newPosition);
     }
     @Override
     public String toString() {
-        return(new MapVisualizer(this).draw(min_position, max_position));
-    }
-
-    public ArrayList<Animal> getAnimals(){
-        return new ArrayList<>(animals);
+        return(new MapVisualizer(this).draw(mapBound.lowerLeftCheck(), mapBound.upperRightCheck()));
     }
 
     public Vector2d get_min_position(){

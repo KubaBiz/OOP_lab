@@ -24,25 +24,7 @@ public class GrassField extends AbstractWorldMap{
         int randomY = (int)(random() * (nka+1));
         return new Vector2d(randomX, randomY);
     }
-    private Vector2d minimal(){
-        Vector2d minimum=new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
-        for (IMapElement element: elements.values()){
-            minimum=new Vector2d(min(minimum.x, element.getPosition().x), min(minimum.y, element.getPosition().y));
-        }
-        if (elements.isEmpty()){
-            return new Vector2d(0,0);
-        }
-        return minimum;
-    }
-    private Vector2d maximal(){
-        Vector2d maksimum=new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
-        for (IMapElement element: elements.values()){
-            maksimum=new Vector2d(max(maksimum.x, element.getPosition().x), max(maksimum.y, element.getPosition().y));
-        }
-        if (elements.isEmpty()){ return new Vector2d(0,0); }
-        return maksimum;
-    }
-    private boolean canplaceGrass(){
+ private boolean canplaceGrass(){
         for (int i=0; i<=zakres; i++){
             for (int j=0; j<=zakres; j++){
                 if (objectAt(new Vector2d(i,j))==null){
@@ -62,6 +44,7 @@ public class GrassField extends AbstractWorldMap{
                     Vector2d zmienna = getRandomVector(zakres);
                     if (objectAt(zmienna) == null) {
                         elements.put(zmienna, new Grass(zmienna));
+                        mapBound.addElementToMap(zmienna);
                         count+=1;
                         flag = true;
                         break;
@@ -92,8 +75,7 @@ public class GrassField extends AbstractWorldMap{
             elements.remove(animal.getPosition());
             count-=1;
             elements.put(animal.getPosition(), animal);
-            animals.add(animal);
-            animal.addObserver(this);
+            animal.addObserver(this);;
             placeGrass();
             return true;
         }
@@ -108,8 +90,27 @@ public class GrassField extends AbstractWorldMap{
     }
     @Override
     public String toString(){
-        min_position=minimal();
-        max_position=maximal();
+        min_position=mapBound.lowerLeftCheck();
+        max_position=mapBound.upperRightCheck();
         return super.toString();
     }
 }
+
+//   private Vector2d minimal(){
+//       Vector2d minimum=new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
+//       for (IMapElement element: elements.values()){
+//           minimum=new Vector2d(min(minimum.x, element.getPosition().x), min(minimum.y, element.getPosition().y));
+//       }
+//       if (elements.isEmpty()){
+//           return new Vector2d(0,0);
+//       }
+//       return minimum;
+//   }
+//   private Vector2d maximal(){
+//       Vector2d maksimum=new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
+//       for (IMapElement element: elements.values()){
+//           maksimum=new Vector2d(max(maksimum.x, element.getPosition().x), max(maksimum.y, element.getPosition().y));
+//       }
+//       if (elements.isEmpty()){ return new Vector2d(0,0); }
+//       return maksimum;
+//   }
