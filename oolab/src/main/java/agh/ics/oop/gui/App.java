@@ -1,88 +1,135 @@
 package agh.ics.oop.gui;
 
 import agh.ics.oop.*;
+
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
-import java.util.List;
-
-
 public class App extends Application {
-    private Label label;
     private GridPane grid = new GridPane();
     private IWorldMap myMap;
-    private final int width = 25;
-    private final int height = 25;
-    private String drawObject(Vector2d position) {
-        if (this.myMap.isOccupied(position)) {
-            Object object = this.myMap.objectAt(position);
-            if (object != null) return object.toString();
-        }
-        return " ";
+    private final int width = 45;
+    private final int height = 45;
+    public Stage stage;
+
+    private VBox drawObject(Vector2d position) {
+        VBox result;
+        if (myMap.isOccupied(position)) {
+            Object object = myMap.objectAt(position);
+            GuiElementBox newElem = new GuiElementBox((IMapElement) object);
+            result = newElem.getBox();
+        } else { result = new VBox(new Label("")); }
+        return result;
     }
 
-    private void drawMap(Stage primaryStage){
+    private void drawMap(){
         grid.setGridLinesVisible(true);
         GrassField myMap = (GrassField) this.myMap;
         int rangeY = myMap.getUpperRight().y - myMap.getLowerLeft().y;
         int rangeX = myMap.getUpperRight().x - myMap.getLowerLeft().x;
-        for (int i = 0; i <= rangeY; i++) {
-            int value = myMap.getUpperRight().y-i;
+        Label label;
 
-            label = new Label(Integer.toString(value));
-            grid.getColumnConstraints().add(new ColumnConstraints(width));
-            grid.getRowConstraints().add(new RowConstraints(height));
-            grid.add(label, 0, i+1);
-
-            GridPane.setHalignment(label, HPos.CENTER);
-            for (int j = 0; j < rangeX+1; j++) {
-                if (i == 0) {
-                    value = myMap.getLowerLeft().x + j;
-                    label = new Label(Integer.toString(value));
-                    grid.add(label, j+1, 0);
-                    GridPane.setHalignment(label, HPos.CENTER);
-                }
-                String result = drawObject(new Vector2d(j+myMap.getLowerLeft().x , i+myMap.getLowerLeft().y));
-                label = new Label(result);
-                grid.add(label, j+1, rangeY-i+1);
-                GridPane.setHalignment(label, HPos.CENTER);
-            }
-        }
-        label = new Label("x/y");
+        label = new Label("y/x");
         grid.getColumnConstraints().add(new ColumnConstraints(width));
         grid.getRowConstraints().add(new RowConstraints(height));
         grid.add(label, 0, 0);
         GridPane.setHalignment(label, HPos.CENTER);
 
-        Scene scene = new Scene(grid, (rangeX+2)*width*1.02, (rangeY+2)*height*1.02);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        for (int i = 0; i <= rangeY; i++) {
+            Integer value = myMap.getUpperRight().y-i;
+
+            label = new Label(value.toString());
+            grid.getRowConstraints().add(new RowConstraints(height));
+            grid.add(label, 0, i+1);
+            GridPane.setHalignment(label, HPos.CENTER);
+
+            for (int j = 0; j < rangeX+1; j++) {
+                if (i == 0) {
+                    value = myMap.getLowerLeft().x + j;
+                    label = new Label(value.toString());
+                    grid.add(label, j+1, 0);
+                    grid.getColumnConstraints().add(new ColumnConstraints(width));
+                    GridPane.setHalignment(label, HPos.CENTER);
+                }
+
+                VBox result = drawObject(new Vector2d(j+myMap.getLowerLeft().x , i+myMap.getLowerLeft().y));
+                grid.add(result, j+1, rangeY-i+1);
+                GridPane.setHalignment(label, HPos.CENTER);
+            }
+        }
+
+        Scene scene = new Scene(grid, (rangeX+2)*width*1.2, (rangeY+2)*height*1.2);
+        stage.setScene(scene);
 
         System.out.println(this.myMap.toString());
-        System.out.println();
-        System.out.println("System zakończył działanie");
+    }
+
+    public void updateMap(){
+        grid.getChildren().clear();
+        grid = new GridPane();
+        drawMap();
+    }
+
+    public void threadExceptionHandler(){
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                System.out.println("Nieprawidlowo wpisane dane: " + e);
+                Platform.exit();
+            }
+        });
+    }
+
+    private void startGame(SimulationEngine engine, String text){
+        String[] array = text.split(" ");
+        MoveDirection[] directions = new OptionsParser().parse(array);
+        engine.setDirections(directions);
+        Thread threadEngine = new Thread(engine);
+        threadEngine.start();
     }
 
     public void start(Stage primaryStage) {
-            try {
-                List<String> arguments = getParameters().getRaw();
-                String[] args = arguments.toArray(new String[0]);
-                MoveDirection[] directions = new OptionsParser().parse(args);
-                IWorldMap map = new GrassField(10);
-                myMap = map;
-                Vector2d[] positions = {new Vector2d(2, 2), new Vector2d(3, 4)};
-                IEngine engine = new SimulationEngine(directions, myMap, positions);
-                engine.run();
-                drawMap(primaryStage);
-            } catch(IllegalArgumentException ex) {
-                System.out.println(ex);
-            }
+        try {
+            threadExceptionHandler();
 
+            AbstractWorldMap map = new GrassField(10);
+            myMap = map;
+            stage = primaryStage;
+            Vector2d[] positions2 = {new Vector2d(2,2), new Vector2d(3,4)};
+            SimulationEngine engine = new SimulationEngine(map, positions2, this, 600);
+            Button button = new Button("Start");
+            button.setPadding(new Insets(20, 50, 20 ,50));
+            button.setStyle("-fx-font: 20 arial;");
+            TextField text = new TextField("Enter directions");
+            text.setPadding(new Insets(20,10,20,10));
+            text.setStyle("-fx-font: 20 arial ;");
+
+                HBox hbox = new HBox(text, button);
+
+                hbox.setAlignment(Pos.CENTER);
+                hbox.setSpacing(10);
+
+                button.setOnAction(actionEvent -> startGame(engine, text.getText()));
+                Scene scene = new Scene(hbox, 600, 600);
+
+                stage.setScene(scene);
+                stage.show();
+
+        } catch (IllegalArgumentException ex) {
+            System.out.println(ex);
+
+        }
+        catch (RuntimeException e){
+            System.out.println(e.getMessage());
+        }
     }
 }
