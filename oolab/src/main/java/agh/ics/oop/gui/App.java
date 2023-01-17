@@ -107,11 +107,9 @@ public class App extends Application {
             Vector2d[] positions2 = {new Vector2d(2,2), new Vector2d(3,4)};
             SimulationEngine engine = new SimulationEngine(map, positions2, this, 600);
             Button button = new Button("Start");
-            button.setPadding(new Insets(20, 50, 20 ,50));
-            button.setStyle("-fx-font: 20 arial;");
+            button.setPadding(new Insets(10, 50, 10 ,50));
             TextField text = new TextField("Enter directions");
-            text.setPadding(new Insets(20,10,20,10));
-            text.setStyle("-fx-font: 20 arial ;");
+            text.setPadding(new Insets(10,10,10,10));
 
                 HBox hbox = new HBox(text, button);
 
